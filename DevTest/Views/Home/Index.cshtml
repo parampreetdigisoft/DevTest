@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div style="width: 70%; padding: 20px">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+
+            <! – To show notification count-->
+            <div style="float: left" class="panel-title">Notifications</div>
+            <div style="float: right" class="badge" id="cntNotifications"></div>
+            <div style="clear: both"></div>
+
+
+        </div>
+        <div class="panel-body">
+            <! – To show All the notifications-->
+            <table class="table table-striped table-hover ">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>CampaignName</th>
+                        <th>Date</th>
+                        <th>Clicks</th>
+                        <th>Conversions</th>
+                        <th>Impressions</th> 
+                        <th>AffiliateName</th>
+                    </tr>
+                </thead>
+
+                <tbody id="notificationTab"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(function () {
+
+            // Reference the auto-generated proxy for the hub.
+
+            var notification = $.connection.notificationHUB;
+
+            // Client side method for receiving the list of notifications on the connected event from the server
+            notification.client.refreshNotification = function (data) {
+                $("#notificationTab").empty();
+                $("#cntNotifications").text(data.length);
+                for (var i = 0; i < data.length; i++) {
+                    $("#notificationTab").append("<tr id='" + data.ID + "'> <td> " + data.ID + "</td> <td>" + data.CampaignName + "</td><td>" + data.Date + "</td><td>" + data.Clicks + "</td><td>" + data.Conversions + "</td> <td>" + data.Impressions + "</td> <td>" + data.AffiliateName + "</td></tr>");
+                }
+            }
+
+            //Client side method which will be invoked from the Global.asax.cs file.
+            notification.client.addLatestNotification = function (data) {
+                $("#notificationTab").append("<tr id='" + data.ID + "'> <td> " + data.ID + "</td> <td>" + data.CampaignName + "</td><td>" + data.Date + "</td><td>" + data.Clicks + "</td><td>" + data.Conversions + "</td> <td>" + data.Impressions + "</td> <td>" + data.AffiliateName + "</td></tr>");
+            }
+            //Client side method which will be invoked from the Global.asax.cs file.
+            notification.client.deleteLatestNotification = function (data) { 
+                $("#notificationTab").find("#" + data.ID).remove('tr');
+            }
+            //Client side method which will be invoked from the Global.asax.cs file.
+            notification.client.updateLatestNotification = function (data) { 
+                $("#notificationTab").find("#" + data.ID).remove('tr');
+                $("#notificationTab").append("<tr id='" + data.ID + "'> <td> " + data.ID + "</td> <td>" + data.CampaignName + "</td><td>" + data.Date + "</td><td>" + data.Clicks + "</td><td>" + data.Conversions + "</td> <td>" + data.Impressions + "</td> <td>" + data.AffiliateName + "</td></tr>");
+            }
+
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                //
+            });
+        });
+    </script>
+}
+
